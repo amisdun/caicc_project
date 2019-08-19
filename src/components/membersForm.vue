@@ -1,5 +1,5 @@
 <template>
-  <div class="formData">
+  <div class="formData" v-if="defaultShow">
         <button @click="showAdmin" class="w3-btn w3-purple w3-margin-bottom w3-display-topright" v-show="adminPortal" style="right: 12vh; top: 2vh;outline: none"><icon name="user"></icon> Admin</span></button>
         <form class="w3-card w3-animate-top" v-show="Admin">
             <p style="font-family: 'Comic Sans MS', cursive, sans-serif;font-weight: bold" class="w3-text-purple">Please provide your details for authentication</p>
@@ -57,6 +57,31 @@
       </div>
   
   </div>
+  <div v-else class="memberData w3-card">
+    <button class="w3-btn w3-purple w3-margin-bottom w3-display-topright" style="right: 12vh; top: 2vh;outline: none">Logout</button>
+    <form>
+    <p class="w3-margin" style="padding-top: 10px">
+      <input class="w3-input w3-border" type="text" v-model="search" placeholder="Search member by name">
+    </p>
+    </form>
+    <div class="w3-margin">
+      <table class="w3-table">
+        <tr class="w3-purple">
+          <th>Firstname</th>
+          <th>Lastname</th>
+          <th>age</th>
+          <th>occupation</th>
+          <th>phone Number</th>
+          <th>email</th>
+          <th>house Address</th>
+          <th>gender</th>
+        </tr>
+        <tr>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+  </div>
 </template>
 <script>
 export default {
@@ -67,6 +92,8 @@ export default {
         {gender: "male"},
         {gender: "female"}
       ],
+      search: "",
+      defaultShow: false,
       selectedGender: "",
       Admin: false,
       adminPortal: true,
@@ -110,6 +137,10 @@ export default {
     height: auto
   }
   div.formData{
+    margin-left: 5vw;
+     margin-right: 5vw;
+  }
+  div.memberData{
     margin-left: 5vw;
      margin-right: 5vw;
   }
