@@ -1,6 +1,6 @@
 <template>
   <div class="formData">
-        <button @click="showAdmin" class="w3-btn w3-purple w3-margin-bottom w3-display-topright" v-show="adminPortal" style="right: 12vh; top: 2vh;outline: none"><span class="fa fa-user-circle-o">Admin</span></button>
+        <button @click="showAdmin" class="w3-btn w3-purple w3-margin-bottom w3-display-topright" v-show="adminPortal" style="right: 12vh; top: 2vh;outline: none"><icon name="user"></icon> Admin</span></button>
         <form class="w3-card w3-animate-top" v-show="Admin">
             <p style="font-family: 'Comic Sans MS', cursive, sans-serif;font-weight: bold" class="w3-text-purple">Please provide your details for authentication</p>
             <p class="w3-margin">
@@ -16,7 +16,7 @@
         
         <div class="w3-card-4">
           <div class="w3-container w3-purple w3-animate-left " style="height:10vh; font-size:0.9vw">
-            <h2 style="font-size:3vh;">CAICC ONLINE MEMBERSHIP FORM</h2>
+            <h2 style="font-size:2.8vh;">CAICC ONLINE MEMBERSHIP FORM</h2>
           </div>
           <div class="w3-container">
             <h2 style="font-size:3vh">Fill in the form below,<p><b> NB: all fields are required</b></p></h2>
