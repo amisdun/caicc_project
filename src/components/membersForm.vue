@@ -93,7 +93,7 @@ export default {
         {gender: "female"}
       ],
       search: "",
-      defaultShow: false,
+      defaultShow: true,
       selectedGender: "",
       Admin: false,
       adminPortal: true,
