@@ -322,8 +322,8 @@ export default {
     height: auto
   }
   div.formData{
-    margin-left: 5vw;
-     margin-right: 5vw;
+    margin-left: 3vw;
+     margin-right: 3vw;
   }
   div.memberData{
     margin-left: 5vw;
