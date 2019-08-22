@@ -206,7 +206,7 @@ export default {
         this.alert = false;
         this.showAlert = false;
         this.axios({
-          url: "http://localhost:3000/members/membersData",
+          url: "/members/membersData",
           method: "post",
           dataType: "json",
           data: {gender: this.selectedGender,
@@ -251,7 +251,7 @@ export default {
         this.passAlert  = false;
         // making the ajax call
         this.axios({
-          url: "http://localhost:3000/members/login",
+          url: "/members/login",
           method: "post",
           dataType: "json",
           data: {
@@ -266,7 +266,7 @@ export default {
               this.defaultShow = false;
               this.msgAlert = false;
               this.axios({
-                url: `http://localhost:3000/members/admin?token=${newtoken}`,
+                url: `/members/admin?token=${newtoken}`,
                 method: "get",
                 dataType: "json",
               })
