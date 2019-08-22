@@ -13,6 +13,9 @@
               <input class="w3-input w3-border" type="password" placeholder="password" v-model="password" required>
               <span v-show="passAlert" class="w3-text-red w3-animate-bottom">Please enter your password</span>
             </p>
+            <div style="text-align:center" v-show="msgAlert">
+            <span class="w3-text-red w3-animate-bottom">{{msg}}</span>
+            </div>
             <div style="text-align: center">
               <button class="w3-btn w3-purple w3-margin-bottom" style="outline: none" @click.prevent="adminLogin">Login</button>
             </div>
@@ -29,10 +32,12 @@
           <div class="w3-container">
             <h2 style="font-size:3vh;text-align: center">Fill in the form below,<p><b> NB: all fields are required</b></p></h2>
           </div>
-
+          <div v-show="showAlert" style="text-align: center" class="w3-margin">
+            <span class=" w3-red w3-padding w3-small">Please check and fill all fields correctly !</span>
+          </div>
           <form class="w3-container">
             <p>
-            <icon name="user"></icon><input class="w3-input w3-border" type="text" placeholder="Firstname" v-model="firsname" required>
+            <icon name="user"></icon><input class="w3-input w3-border" type="text" placeholder="Firstname" v-model="firstname" required>
             </p>
             <p>
             <icon name="user"></icon>     
@@ -65,6 +70,7 @@
             </select>
             <div style="text-align: center">
               <span v-show="alert" class="w3-text-red w3-animate-bottom">Please select your gender</span><br>
+              <span v-show="register" class="w3-text-green w3-animate-bottom w3-small"><icon name="check"></icon> {{reg}}</span><br>
               <button class="w3-btn w3-purple w3-margin-top" style="outline: none" @click.prevent="submitMembersDeatails">Submit</button>
             </div>
           </form>
@@ -91,8 +97,11 @@
     </p>
     </form>
     </div>
-    <div class="w3-margin">
-      <table class="w3-table">
+    <div style="text-align: center">
+      <span class="w3-text-purple w3-animate-zoom w3-margin w3-large">{{regs}}</span>
+    </div>
+    <div class="w3-margin w3-responsive" style="height: 500px">
+      <table class="w3-table-all w3-centered w3-small">
         <tr class="w3-purple">
           <th>Firstname</th>
           <th>Lastname</th>
@@ -103,8 +112,15 @@
           <th>house Address</th>
           <th>gender</th>
         </tr>
-        <tr>
-          <td></td>
+        <tr v-for="member in members" class="w3-hover-light-grey">
+          <td>{{member.firstName}}</td>
+          <td>{{member.lastName}}</td>
+          <td>{{member.age}}</td>
+          <td>{{member.occupation}}</td>
+          <td>{{member.contactDetails.phoneNumber}}</td>
+          <td>{{member.contactDetails.emailAddress}}</td>
+          <td>{{member.houseAddress}}</td>
+          <td>{{member.gender}}</td>
         </tr>
       </table>
     </div>
@@ -119,6 +135,7 @@ export default {
         {gender: "male"},
         {gender: "female"}
       ],
+      regs: [],
       userAlert: false,
       passAlert: false,
       Username: "",
@@ -134,7 +151,13 @@ export default {
       occupation: "",
       email: "",
       house_addres: "",
-      phone_number: ""
+      phone_number: "",
+      msg: "",
+      msgAlert: false,
+      register: false,
+      reg: "",
+      members: [],
+      showAlert: false
 
     }
   },
@@ -144,13 +167,46 @@ export default {
     },
     submitMembersDeatails: function(){
       if(!this.selectedGender){
-        this.alert = true;
-        return false
+        this.showAlert = true;
+        this.register = false;
+      }
+      if(this.firstname == ""){
+        this.showAlert = true;
+        this.register = false;
+      }
+      if(this.lastname == ""){
+        this.showAlert = true;
+        this.register = false;
+      }
+      if(this.age == ""){
+        this.showAlert = true
+        this.register = false;
+      }
+      if(isNaN(this.age) == true){
+        this.showAlert = true;
+        this.register = false;
+      }
+      if(this.occupation == ""){
+        this.showAlert = true;
+        this.register = false;
+      }
+      if(this.phone_number == ""){
+        this.showAlert = true;
+        this.register = false;
+      }
+      if(isNaN(this.phone_number) == true){
+        this.showAlert = true;
+        this.register = false;
+      }
+      if(this.house_addres == ""){
+        this.showAlert = true;
+        this.register = false;
       }
       else{
         this.alert = false;
-        this.axion({
-          url: "/members/membersData",
+        this.showAlert = false;
+        this.axios({
+          url: "http://localhost:3000/members/membersData",
           method: "post",
           dataType: "json",
           data: {gender: this.selectedGender,
@@ -164,12 +220,18 @@ export default {
           }
         })
         .then(response=>{
-          if(response.msg == "success"){
-
+          console.log(response);
+          if(response.data.msg == "success"){
+              this.register = true;
+              this.reg = response.data.message;
+          }
+          else if(response.data.msg == "registered"){
+            this.register = true;
+            this.reg = response.data.message
           }
         })
         .catch(err=>{
-          console.log(err)
+          console.log("an error occured" + err)
         })
         return true
       }
@@ -177,18 +239,19 @@ export default {
 
     adminLogin: function(){
       if(this.Username.length < 1){
-        this.userAlert = true
+        this.userAlert = true;
+        this.msgAlert = false
       }
       if(this.password.length < 1){
-          this.passAlert = true
+          this.passAlert = true;
+          this.msgAlert = false
       }
-      if(this.Username.trim() != "" && this.password.trim() != ""){
-         this.defaultShow = false;
+      if(this.Username.trim().length >= 1 && this.password.trim().length >= 1){
         this.userAlert = false;
         this.passAlert  = false;
         // making the ajax call
-        this.axion({
-          url: "",
+        this.axios({
+          url: "http://localhost:3000/members/login",
           method: "post",
           dataType: "json",
           data: {
@@ -197,16 +260,46 @@ export default {
           }
         })
         .then(res=>{
-
+          console.log(res);
+            if(res.data.message == "success"){
+              var newtoken = res.data.token
+              this.defaultShow = false;
+              this.msgAlert = false;
+              this.axios({
+                url: `http://localhost:3000/members/admin?token=${newtoken}`,
+                method: "get",
+                dataType: "json",
+              })
+              .then(res=>{
+                if(res.data.msg == "success"){
+                  this.regs = res.data.message;
+                  this.members = res.data.caicc_members;
+                  console.log(this.members);
+                }
+                
+              }).catch(err=>{
+                console.log("an error occured " + err);
+              })
+            }
+            else if(res.data.msg == "error"){
+                this.msg = res.data.message;
+                this.msgAlert = true;
+            }
+            else if(res.data.msg == "Authentication failed"){
+                this.msg = res.data.message;
+                this.msgAlert = true
+            }
         })
         .catch(err=>{
-          console.log(err)
+          console.log("an error has occured" + err.msg)
         })
       }
     },
     closeAdmin: function(){
       this.defaultShow = true
       this.Admin = false;
+      this.Username = "";
+      this.password = "";
     },
     showAdmin: function(){
       if(this.Admin === false){

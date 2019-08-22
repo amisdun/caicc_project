@@ -7,6 +7,10 @@
 import membersForm from './components/membersForm.vue'
 import "../public/w3.css"
 import "../public/mediaquery.css"
+import Vue from 'vue'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+Vue.use(VueAxios, axios)
 
 export default {
   name: 'app',
