@@ -10,6 +10,8 @@ import "../public/mediaquery.css"
 import Vue from 'vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import _ from 'lodash'
+
 Vue.use(VueAxios, axios)
 
 export default {

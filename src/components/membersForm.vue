@@ -13,6 +13,9 @@
               <input class="w3-input w3-border" type="password" placeholder="password" v-model="password" required>
               <span v-show="passAlert" class="w3-text-red w3-animate-bottom">Please enter your password</span>
             </p>
+            <div style="text-align: center">
+              <span v-show="alert" class="w3-text-purple w3-animate-bottom w3-margin"><icon name="spinner" class="w3-spin"></icon>  please wait...</span>
+            </div>
             <div style="text-align:center" v-show="msgAlert">
             <span class="w3-text-red w3-animate-bottom">{{msg}}</span>
             </div>
@@ -68,9 +71,9 @@
               <option value="" disabled selected>select your gender</option>
               <option v-for="gend in genderData" :value="gend.gender">{{gend.gender}}</option>
             </select>
-            <div style="text-align: center">
-              <span v-show="alert" class="w3-text-red w3-animate-bottom">Please select your gender</span><br>
-              <span v-show="register" class="w3-text-green w3-animate-bottom w3-small"><icon name="check"></icon> {{reg}}</span><br>
+            <div style="text-align: center" class="w3-margin-top">
+                <span v-show="alert" class="w3-text-purple w3-animate-bottom w3-margin"><icon name="spinner" class="w3-spin"></icon>  please wait...</span>
+              <span v-show="register" class="w3-text-green w3-animate-bottom w3-margin-bottom"><icon name="check"></icon> {{reg}}</span><br>
               <button class="w3-btn w3-purple w3-margin-top" style="outline: none" @click.prevent="submitMembersDeatails">Submit</button>
             </div>
           </form>
@@ -161,10 +164,46 @@ export default {
 
     }
   },
-  methods: {
+  watch: {
     change: function($event){
       this.selectedGender = $event.target.value;
+    }
+  },
+  methods: {
+     postMembers: function(){
+      this.axios({
+          url: "/members/membersData",
+          method: "post",
+          dataType: "json",
+          data: {gender: this.selectedGender,
+                firstname: this.firstname,
+                lastname: this.lastname,
+                age: this.age,
+                occupation: this.occupation,
+                phoneNum: this.phone_number,
+                email: this.email,
+                houseaddress: this.house_addres
+          }
+        })
+        .then(response=>{
+          console.log(response);
+          if(response.data.msg == "success"){
+                this.register = true;
+                this.alert = false;
+                this.reg = response.data.message;
+          }
+          else if(response.data.msg == "registered"){
+              this.register = true;
+              this.alert = false;
+              this.reg = response.data.message
+          }
+        })
+        .catch(err=>{
+          console.log("an error occured" + err)
+        })
+        return true
     },
+
     submitMembersDeatails: function(){
       if(!this.selectedGender){
         this.showAlert = true;
@@ -203,54 +242,14 @@ export default {
         this.register = false;
       }
       else{
-        this.alert = false;
+        this.register = false;
         this.showAlert = false;
-        this.axios({
-          url: "/members/membersData",
-          method: "post",
-          dataType: "json",
-          data: {gender: this.selectedGender,
-                firstname: this.firstname,
-                lastname: this.lastname,
-                age: this.age,
-                occupation: this.occupation,
-                phoneNum: this.phone_number,
-                email: this.email,
-                houseaddress: this.house_addres
-          }
-        })
-        .then(response=>{
-          console.log(response);
-          if(response.data.msg == "success"){
-              this.register = true;
-              this.reg = response.data.message;
-          }
-          else if(response.data.msg == "registered"){
-            this.register = true;
-            this.reg = response.data.message
-          }
-        })
-        .catch(err=>{
-          console.log("an error occured" + err)
-        })
-        return true
+        this.alert = true;
+        _.debounce(this.postMembers(),4000);
       }
     },
-
-    adminLogin: function(){
-      if(this.Username.length < 1){
-        this.userAlert = true;
-        this.msgAlert = false
-      }
-      if(this.password.length < 1){
-          this.passAlert = true;
-          this.msgAlert = false
-      }
-      if(this.Username.trim().length >= 1 && this.password.trim().length >= 1){
-        this.userAlert = false;
-        this.passAlert  = false;
-        // making the ajax call
-        this.axios({
+    login: function(){
+      this.axios({
           url: "/members/login",
           method: "post",
           dataType: "json",
@@ -274,6 +273,7 @@ export default {
                 if(res.data.msg == "success"){
                   this.regs = res.data.message;
                   this.members = res.data.caicc_members;
+                  this.alert = false;
                   console.log(this.members);
                 }
                 
@@ -283,16 +283,35 @@ export default {
             }
             else if(res.data.msg == "error"){
                 this.msg = res.data.message;
+                this.alert = false;
                 this.msgAlert = true;
             }
             else if(res.data.msg == "Authentication failed"){
                 this.msg = res.data.message;
+                this.alert = false;
                 this.msgAlert = true
             }
         })
         .catch(err=>{
           console.log("an error has occured" + err.msg)
         })
+    },
+    adminLogin: function(){
+      if(this.Username.length < 1){
+        this.userAlert = true;
+        this.msgAlert = false
+      }
+      if(this.password.length < 1){
+          this.passAlert = true;
+          this.msgAlert = false
+      }
+      if(this.Username.trim().length >= 1 && this.password.trim().length >= 1){
+        this.userAlert = false;
+        this.passAlert  = false;
+        this.msgAlert = false;
+        this.alert = true;
+        // making the ajax call
+        _.debounce(this.login(),4000)
       }
     },
     closeAdmin: function(){
