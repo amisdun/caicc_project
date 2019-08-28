@@ -96,7 +96,7 @@
       <button class="w3-btn w3-purple w3-margin-bottom w3-display-topright" style="right: 7vw; top: 8vh;outline: none" @click="closeAdmin"><icon name="times"></icon></button>
     <form>
     <p class="w3-margin">
-      <input class="w3-input w3-border" type="text" v-model="search" placeholder="Search member by name">
+      <input class="w3-input w3-border" type="text" v-model="search" placeholder="Search member by firstName">
     </p>
     </form>
     </div>
@@ -115,7 +115,7 @@
           <th>house Address</th>
           <th>gender</th>
         </tr>
-        <tr v-for="member in members" class="w3-hover-light-grey">
+        <tr v-for="member in members" v-for="member in allMembers" class="w3-hover-light-grey">
           <td>{{member.firstName}}</td>
           <td>{{member.lastName}}</td>
           <td>{{member.age}}</td>
@@ -167,6 +167,13 @@ export default {
   watch: {
     change: function($event){
       this.selectedGender = $event.target.value;
+    }
+  },
+  computed: {
+    allMembers(){
+      return this.members.filter(member => {
+        return member.firstName.toLowerCase().includes(this.search.toLowerCase())
+      })
     }
   },
   methods: {
